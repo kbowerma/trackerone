@@ -1,7 +1,9 @@
 // This #include statement was automatically added by the Particle IDE.
 #include "application.h"
  #include "lib/AssetTracker/firmware/AssetTracker.h"
- #include "accelerometer.h"
+ #include "lib/streaming/firmware/spark-streaming.h"
+ #include "trackerone.h"
+
 
 /* -----------------------------------------------------------
   This example shows some clever ways to use the accelerometer
@@ -62,7 +64,8 @@ void loop() {
 
         // Send that acceleration to the serial port where it can be read by USB
         //Serial.println(pubAccel);
-        Serial.println(t.readXYZmagnitude());
+        Serial << "XYZ Magnitude local " << t.readXYZmagnitude() << endl;
+        //Serial.println("have a good day");
 
         // If it's set to transmit AND it's been at least delayMinutes since the last one...
         if(transmittingData && ((millis()-lastPublish) > (delayMinutes*60*1000))){
