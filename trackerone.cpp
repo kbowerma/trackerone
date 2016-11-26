@@ -64,7 +64,7 @@ void loop() {
 
 
 
-//  t.updateGPS(); // You'll need to run this every loop to capture the GPS output
+  t.updateGPS(); // You'll need to run this every loop to capture the GPS output
     // Check if there's been a big acceleration
 
 
