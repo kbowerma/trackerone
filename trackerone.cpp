@@ -24,7 +24,7 @@ void setup() {
     // Enable the GPS module. Defaults to off to save power.
     // Takes 1.5s or so because of delays.
     // NOTE:   this seems to prevent the readXYZ or loop from owrking
-    //t.gpsOn();
+    t.gpsOn();
 
     // Opens up a Serial port so you can listen over USB
     Serial.begin(9600);
@@ -33,6 +33,7 @@ void setup() {
     Particle.function("aThresh",accelThresholder);
     Particle.function("tmode", transmitMode);
     Particle.function("batt", batteryStatus);
+    Particle.function("gps", gpsPublish);
 }
 
 // loop() runs continuously
@@ -40,35 +41,35 @@ void loop() {
 
   unsigned long now = millis();
   uint32_t ticks = System.ticks();
+  //digitalWrite(D7, HIGH);
 
 
   if ((now - lastTime) >= 1500) {
     lastTime = now;
-    Serial.printlnf("%lu", now);
+    //Serial.printlnf("%lu", now);
   }
 
   if ( millis() % 1000 < 10 )  {
 
 
-        Serial << "millis TEST  " << millis();
-        Serial << " ticks " << ticks << endl;
+        Serial << "millis TEST  " << millis()/1000;
+        Serial << " ticks: " << ticks << " gpsfix: " << t.gpsFix();
+        // Serial << " accel: " << t.readXYZmagnitude() << endl;
+        Serial << " latlon " << t.readLatLon() << endl;
   }
 
   if ( ticks % 121000000 == 0 ) {
 
-        Serial << "Tick TEST " << millis();
-        Serial << " ticks " << ticks << endl;
+        Serial << "Tick TEST This never works -------- " << endl;
   }
 
 
 
 
 
-  t.updateGPS(); // You'll need to run this every loop to capture the GPS output
+
+
     // Check if there's been a big acceleration
-
-
-
     if(t.readXYZmagnitude() > accelThreshold ){
         // Create a nice string with commas between x,y,z
         String pubAccel = String::format("%d,%d,%d",t.readX(),t.readY(),t.readZ());
@@ -77,7 +78,9 @@ void loop() {
         //Serial.println(pubAccel);
 
         Serial << MYVERSION << " Z: " << t.readX()  << " Y: " << t.readY() << " Z: " << t.readZ();
-        Serial << " XYZ Magnitude  " << t.readXYZmagnitude() << endl;
+        Serial << " XYZ Magnitude  " << t.readXYZmagnitude();
+        Serial << " latlon: " <<  t.readLatLon() << endl;
+        //digitalWrite(D7, LOW);
         //Serial.println("have a good day");
 
         // If it's set to transmit AND it's been at least delayMinutes since the last one...
@@ -92,7 +95,7 @@ void loop() {
 
 
 
-
+  t.updateGPS(); // You'll need to run this every loop to capture the GPS output
 
 }
 
@@ -128,4 +131,18 @@ int batteryStatus(String command){
     if(fuel.getSoC()>10){ return 1;}
     // if you're running out of battery, return 0
     else { return 0;}
+}
+
+
+// Actively ask for a GPS reading if you're impatient. Only publishes if there's
+ // a GPS fix, otherwise returns '0'
+int gpsPublish(String command){
+    if(t.gpsFix()){
+        Particle.publish("G", t.readLatLon(), 60, PRIVATE);
+
+        // uncomment next line if you want a manual publish to reset delay counter
+        // lastPublish = millis();
+        return 1;
+    }
+    else { return 0; }
 }
