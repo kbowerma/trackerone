@@ -19,7 +19,7 @@ for more details where this was take from
 // and is used for registering functions and variables and initializing things
 void setup() {
     // Sets up all the necessary AssetTracker bits
-//    t.begin();
+    t.begin();
 
     // Enable the GPS module. Defaults to off to save power.
     // Takes 1.5s or so because of delays.
@@ -38,12 +38,35 @@ void setup() {
 // loop() runs continuously
 void loop() {
 
-  if(millis()%5000 < 20 ) {
-        Serial.print("doing the 30 loop readXYZmagnitude ");
+  unsigned long now = millis();
+  uint32_t ticks = System.ticks();
+
+
+  if ((now - lastTime) >= 1500) {
+    lastTime = now;
+    Serial.printlnf("%lu", now);
   }
+
+  if ( millis() % 1000 < 10 )  {
+
+
+        Serial << "millis TEST  " << millis();
+        Serial << " ticks " << ticks << endl;
+  }
+
+  if ( ticks % 121000000 == 0 ) {
+
+        Serial << "Tick TEST " << millis();
+        Serial << " ticks " << ticks << endl;
+  }
+
+
+
+
 
 //  t.updateGPS(); // You'll need to run this every loop to capture the GPS output
     // Check if there's been a big acceleration
+
 
 
     if(t.readXYZmagnitude() > accelThreshold ){
@@ -58,13 +81,17 @@ void loop() {
         //Serial.println("have a good day");
 
         // If it's set to transmit AND it's been at least delayMinutes since the last one...
+
         if(transmittingData && ((millis()-lastPublish) > (delayMinutes*60*1000))){
             lastPublish = millis();
             Particle.publish("A", pubAccel, 60, PRIVATE);
         }
 
+
     }
-    
+
+
+
 
 
 }
@@ -87,6 +114,7 @@ int transmitMode(String command){
   // Triggers a publish with the info (so subscribe or watch the dashboard)
   // and also returns a '1' if there's >10% battery left and a '0' if below
 int batteryStatus(String command){
+     Serial << "batt: " << fuel.getSoC() << endl;
     // Publish the battery voltage and percentage of battery remaining
       // if you want to be really efficient, just report one of these
       // the String::format("%f.2") part gives us a string to publish,

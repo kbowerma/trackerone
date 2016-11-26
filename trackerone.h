@@ -19,6 +19,8 @@ int delayMinutes = 10;
 // 9000 is VERY sensitive, 12000 will still detect small bumps
 int accelThreshold = 12000;
 
+unsigned long lastTime = 0;
+
 // Creating an AssetTracker named 't' for us to reference
 AssetTracker t = AssetTracker();
 
