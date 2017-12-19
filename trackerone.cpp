@@ -30,6 +30,8 @@ void setup() {
     Serial.begin(9600);
 
     // These three functions are useful for remote diagnostics. Read more below.
+    Particle.variable("version",MYVERSION);
+    Particle.variable("file",FILENAME);
     Particle.function("aThresh",accelThresholder);
     Particle.function("tmode", transmitMode);
     Particle.function("batt", batteryStatus);
@@ -105,20 +107,20 @@ int transmitMode(String command){
   // Triggers a publish with the info (so subscribe or watch the dashboard)
   // and also returns a '1' if there's >10% battery left and a '0' if below
 int batteryStatus(String command){
-     Serial << "batt: " << fuel.getSoC() << endl;
+    int IntSoC = (int) floor(fuel.getSoC());
+    Serial << "getSoC Debug: " << fuel.getSoC() << endl;
+     Serial << "batt: " << IntSoC << endl;
     // Publish the battery voltage and percentage of battery remaining
       // if you want to be really efficient, just report one of these
       // the String::format("%f.2") part gives us a string to publish,
       // but with only 2 decimal points to save space
-    Particle.publish("B",
+    Particle.publish("Power",
           "v:" + String::format("%f.2",fuel.getVCell()) +
           ",c:" + String::format("%f.2",fuel.getSoC()),
           60, PRIVATE
     );
-    // if there's more than 10% of the battery left, then return 1
-    if(fuel.getSoC()>10){ return 1;}
-    // if you're running out of battery, return 0
-    else { return 0;}
+
+    return IntSoC;
 }
 
 
