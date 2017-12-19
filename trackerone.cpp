@@ -41,28 +41,16 @@ void loop() {
 
   unsigned long now = millis();
   uint32_t ticks = System.ticks();
-  //digitalWrite(D7, HIGH);
-
-
-  if ((now - lastTime) >= 1500) {
-    lastTime = now;
-    //Serial.printlnf("%lu", now);
-  }
 
   if ( millis() % 1000 < 10 )  {
 
 
         Serial << "millis TEST  " << millis()/1000;
-        Serial << " ticks: " << ticks << " gpsfix: " << t.gpsFix();
+      //  Serial << " ticks: " << ticks << " gpsfix: " << t.gpsFix();
         // Serial << " accel: " << t.readXYZmagnitude() << endl;
         Serial << " latlon " << t.readLatLon() << endl;
+      //  Serial << "belt X: " << t.readX()  << " Y: " << t.readY() << " Z: " << t.readZ() << endl;
   }
-
-  if ( ticks % 121000000 == 0 ) {
-
-        Serial << "Tick TEST This never works -------- " << endl;
-  }
-
 
 
 
@@ -77,7 +65,7 @@ void loop() {
         // Send that acceleration to the serial port where it can be read by USB
         //Serial.println(pubAccel);
 
-        Serial << MYVERSION << " Z: " << t.readX()  << " Y: " << t.readY() << " Z: " << t.readZ();
+        Serial << MYVERSION << " X: " << t.readX()  << " Y: " << t.readY() << " Z: " << t.readZ();
         Serial << " XYZ Magnitude  " << t.readXYZmagnitude();
         Serial << " latlon: " <<  t.readLatLon() << endl;
         //digitalWrite(D7, LOW);
